@@ -1,0 +1,25 @@
+.Intro {
+  /* display: flex; */
+  /* height: 77vh; */
+  margin-top: 2rem;
+}
+
+.i-icons {
+  margin-top: 1rem;
+  margin-left: 1rem;
+  display: flex;
+  gap: 2rem;
+}
+.i-icons a > * {
+  transform: scale(2.3);
+  background: var(--secondery-color);
+  color: var(--text-white);
+  padding: 2px;
+  transition: all ease-in-out .2s;
+}
+.i-icons a > *:hover {
+  transform: scale(2.6);
+  color: var(--primary-color);
+  padding: 2px;
+  cursor: pointer;
+}

@@ -1,0 +1,82 @@
+.contact-form{
+    padding: 0 3rem 0 3rem;
+    display: flex;
+    height: 80vh;
+    margin-top: 4rem;
+      /* scroll */
+  padding-top: 3rem;
+}
+
+.c-right{
+    display: flex;
+    justify-content: center;
+    position: relative;
+    flex: 1;
+}
+
+.c-right>form
+{
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    align-items: center;
+    
+}
+
+.c-right .user{
+    width: 20rem;
+    height: 2rem;
+    padding: 0.3em;
+    outline: none;
+    border: 1px solid var(--primary);
+    border-radius: 8px;
+    font-size: 16px;   
+}
+
+textarea{
+    height: 6rem!important;
+}
+
+.c-blur1{
+    top: 1rem;
+    left: 8rem;
+}
+
+@media screen and (max-width: 480px) {
+    .contact-form{
+        padding: 0;
+        flex-direction: column;
+        gap: 5rem;
+        height: 40rem;
+    }
+    .c-right .user{
+        width: 16rem;
+    }
+
+}   
+
+
+.contact-wrapper .form-control,
+.contact-wrapper textarea{
+    background: transparent;
+    border-color: var(--gray-color);
+    font-size: 15px;
+    font-weight: 400;
+    padding: 10px 20px;
+    color: var(--text-white);
+}
+.contact-wrapper .form-control:hover,
+.contact-wrapper textarea:hover,
+.contact-wrapper .form-control:focus,
+.contact-wrapper textarea:focus{
+    border-color: var(--primary-color);
+    background: transparent;
+    color: var(--text-white);
+}
+.contact-wrapper .call_details{
+    color: var(--text-gray);
+}
+.contact-wrapper .call_details a{
+    color: var(--text-gray);
+    font-weight: 700;
+}
