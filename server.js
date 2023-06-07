@@ -16,7 +16,7 @@ const cors = require('cors');
 //DataBase 
 const mongoose = require('mongoose');
 // app.use(express.static('client/dist'));
-app.use(express.static(path.join(__dirname, 'client', 'dist')));
+app.use(express.static(path.join(__dirname, 'client')));
 
 // Security Middleware implementation
 app.use(cors());
