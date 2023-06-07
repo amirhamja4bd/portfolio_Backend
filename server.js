@@ -39,7 +39,7 @@ app.get('*', function (req, res) {
 
 
 // Manage BackEnd Routings
-app.use('/api/v1', router);
+app.use('/', router);
 
 
 // Database Connection
