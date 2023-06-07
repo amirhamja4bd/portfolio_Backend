@@ -2,11 +2,7 @@
   "version": 2,
   "builds": [
     {
-      "src": "client/src/**",
-      "use": "@vercel/static-build"
-    },
-    {
-      "src": "server.js",
+      "src": "client/package.json",
       "use": "@vercel/node"
     }
   ],
@@ -17,7 +13,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "client/src/index.html"
+      "dest": "client/dist/index.html"
     }
   ]
 }
