@@ -29,7 +29,7 @@ app.use(bodyParser.json());
 const limiter = rateLimit({ windowMs: 15 * 60 * 60, max: 3000 });
 // Manage Frontend Routes
 app.get('*', function (req, res) {
-  res.sendFile(path.resolve(__dirname, 'client', 'index.html'));
+  res.sendFile(path.resolve(__dirname, 'client', 'dist', 'index.html'));
 });
 // Manage BackEnd Routings
 app.use('/api/v1', router);
