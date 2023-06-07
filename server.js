@@ -3,6 +3,7 @@ const router = require ('./src/routes/api');
 const app = express();
 const bodyParser = require('body-parser');
 const path= require('path');
+require("dotenv").config();
 
 // Secure Middleware
 const rateLimit = require('express-rate-limit');
@@ -29,17 +30,36 @@ app.use(bodyParser.json())
 // Rate Limit
 const limiter = rateLimit({windowMs: 15*60*60, max:3000})
 
-// Database Connection
-let URI = 'mongodb+srv://<username>:<password>@cluster0.gsyup6g.mongodb.net/portfolio?retryWrites=true&w=majority';
-let OPTION = {user: 'testuser7777', pass: 'testuser7777', autoIndex: true};
-mongoose.set('strictQuery', false);
-mongoose.connect(URI, OPTION, (error)=>{
-    console.log("Database Connection Success")
-    console.log(error)
-})
-
 // Manage BackEnd Routings
 app.use("/api/v1", router)
+
+app.get('/', (req, res)=>{
+    res.status(200).send(`
+        <div class="container mt-5">
+            <div class="jumbotron text-center">
+                <h1 class="fs-3">Welcome to My E-Commerce Server</h1>
+                <p class="lead">Visit My Website:- 
+                <a class="" href="https://amirhamza.vercel.app/"> My E-Commerce Website</a></p>
+            </div>
+        </div>
+    `);
+});
+
+
+// Database Connection
+const database = process.env.DATABASE_URL
+const port = process.env.PORT || 5000;
+
+// Connect to Database and start server
+mongoose.set('strictQuery', true);
+mongoose
+    .connect(database, {autoIndex: true})
+    .then(() => {
+        app.listen(port, () => {
+            console.log(` Server Running on port ${port}`);
+        })
+    })
+    .catch((error) => console.log(error));
 
 // Manage Frontend Routes
 app.get('*',function (req,res) {

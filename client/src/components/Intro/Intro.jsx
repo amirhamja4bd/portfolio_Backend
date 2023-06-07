@@ -46,7 +46,7 @@ const Intro = () => {
                         meaningful contributions to the organization's growth.
                       </p>
                       <div className="mt-4">
-                          <a className="main-btn" href="https://drive.google.com/file/d/1rTnUk9uMiLMc1lfqAkHCXlbMpU12i3Zj/view?usp=drive_link">Download CV</a>
+                          <a className="main-btn" href="https://drive.google.com/file/d/1uj5KcyRNQBMsihvMBrhOj76JXlctTsQn/view?usp=drive_link">Download CV</a>
                       </div>
                   </div>
                   <div className="i-icons d-flex justify-content-md-start justify-content-center mt-5">
