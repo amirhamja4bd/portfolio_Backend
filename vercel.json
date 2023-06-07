@@ -9,7 +9,8 @@
       "src": "client",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "client/dist"
+        "buildCommand": "npm run build",
+        "outputDirectory": "client/dist"
       }
     }
   ],
