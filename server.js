@@ -16,7 +16,7 @@ const cors = require('cors');
 //DataBase 
 const mongoose = require('mongoose');
 // app.use(express.static('client/dist'));
-app.use(express.static(path.join(__dirname, 'client')));
+app.use(express.static(path.join(__dirname, 'client', 'dist')));
 
 // Security Middleware implementation
 app.use(cors());
@@ -34,7 +34,7 @@ const limiter = rateLimit({ windowMs: 15 * 60 * 60, max: 3000 });
 
 // Manage Frontend Routes
 app.get('*', function (req, res) {
-  res.sendFile(path.resolve(__dirname, 'client', 'index.html'));
+  res.sendFile(path.resolve(__dirname, 'client', 'dist', 'index.html'));
 });
 
 
