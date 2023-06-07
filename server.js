@@ -38,6 +38,9 @@ app.use('/api/v1', router);
 app.get('*', function (req, res) {
   res.sendFile(path.resolve(__dirname, 'client', 'dist', 'index.html'));
 });
+app.get('/about', (req, res) => {
+    res.render('about')
+})
 
 // Database Connection
 const database = process.env.DATABASE_URL;
