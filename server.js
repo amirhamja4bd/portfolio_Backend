@@ -16,7 +16,7 @@ const cors = require('cors');
 //DataBase 
 const mongoose = require('mongoose');
 // app.use(express.static('client/dist'));
-app.use(express.static(path.join(__dirname, 'client', 'dist')));
+// app.use(express.static(path.join(__dirname, 'client', 'dist')));
 
 // Security Middleware implementation
 app.use(cors());
@@ -35,12 +35,24 @@ const limiter = rateLimit({ windowMs: 15 * 60 * 60, max: 3000 });
 app.use('/api/v1', router);
 
 // Manage Frontend Routes
-app.get('*', function (req, res) {
-  res.sendFile(path.resolve(__dirname, 'client', 'dist', 'index.html'));
+// app.get('*', function (req, res) {
+//   res.sendFile(path.resolve(__dirname, 'client', 'dist', 'index.html'));
+// });
+// Serve static files from the frontend
+const staticPath = path.join(__dirname, 'client', 'dist');
+app.use(express.static(staticPath));
+
+// Catch-all route for handling frontend requests
+app.get('*', (req, res) => {
+  const indexPath = path.join(staticPath, 'index.html');
+  res.sendFile(indexPath, (err) => {
+    if (err) {
+      console.error('Failed to send index.html:', err);
+      res.status(500).send('Internal Server Error');
+    }
+  });
 });
-app.get('/about', (req, res) => {
-    res.render('about')
-})
+
 
 // Database Connection
 const database = process.env.DATABASE_URL;
