@@ -38,7 +38,7 @@ app.use('/api/v1', router);
 
 // Frontend route
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'client', 'dist', 'index.html'));
+  res.sendFile(path.resolve(__dirname, 'client', 'dist', 'index.html'));
 });
 
 // Database Connection
@@ -50,13 +50,22 @@ mongoose.set('strictQuery', true);
 mongoose
   .connect(database, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
-    app.listen(port, () => {
-      console.log(`Server running on port ${port}`);
-    });
+    // Check if running in AWS Lambda environment
+    if (process.env.LAMBDA_TASK_ROOT && process.env.AWS_EXECUTION_ENV) {
+      const serverlessExpress = require('aws-serverless-express');
+      const server = serverlessExpress.createServer(app);
+      module.exports.handler = (event, context) => {
+        serverlessExpress.proxy(server, event, context);
+      };
+    } else {
+      // Start server locally
+      app.listen(port, () => {
+        console.log(`Server running on port ${port}`);
+      });
+    }
   })
   .catch((error) => console.log(error));
 
-module.exports = app;
 
 
 
