@@ -15,7 +15,8 @@ const cors = require('cors');
 
 //DataBase 
 const mongoose = require('mongoose');
-app.use(express.static('client/dist'));
+// app.use(express.static('client/dist'));
+app.use(express.static(path.join(__dirname, 'client', 'dist')));
 
 // Security Middleware implementation
 app.use(cors())
@@ -45,6 +46,21 @@ app.use("/api/v1", router)
 //     `);
 // });
 
+// Manage Frontend Routes
+// app.get('/',function (req,res) {
+//     res.sendFile(path.resolve(__dirname,'client', 'dist', 'index.html'))
+// })
+
+// Set up your server routes here
+app.get('/api/example', (req, res) => {
+    // Handle your API endpoint logic
+    res.json({ message: 'Example response from the server' });
+  });
+  
+  // Serve index.html for all other routes
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'client', 'dist', 'index.html'));
+  });
 
 // Database Connection
 const database = process.env.DATABASE_URL
@@ -61,10 +77,6 @@ mongoose
     })
     .catch((error) => console.log(error));
 
-// Manage Frontend Routes
-app.get('/',function (req,res) {
-    res.sendFile(path.resolve(__dirname,'client', 'dist', 'index.html'))
-})
 
 
 module.exports = app;
