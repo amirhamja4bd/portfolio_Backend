@@ -2,7 +2,7 @@ import React from "react";
 import "./Footer.css";
 import { motion } from "framer-motion";
 import { FaLinkedinIn, FaFacebookF, FaInstagram } from 'react-icons/fa';
-import portfolio from "../../img/portfolio.png";
+import portfolio from "../../assets/img/portfolio.png";
 
 const Footer = () => {
   return (
@@ -30,7 +30,7 @@ const Footer = () => {
           </div>
           <div class="col-lg-4 col-md-12">
             <div class="copyright-text text-lg-start text-center mb-3 mb-lg-0">
-              <p class="mb-0 fs-6">Copyright © 2022 <a href="#">Amir_hamza</a>. All Rights Reserved.</p>
+              <p class="mb-0 fs-6">Copyright © 2022 <a href="/">Amir_hamza</a>. All Rights Reserved.</p>
             </div>
           </div>
         </div>

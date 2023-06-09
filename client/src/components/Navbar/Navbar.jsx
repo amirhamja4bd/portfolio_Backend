@@ -3,7 +3,7 @@ import Toggle from "../Toggle/Toggle";
 import "./Navbar.css";
 import { Link } from "react-scroll";
 import { themeContext } from "../../Context";
-import portfolio from "../../img/portfolio.png";
+import portfolio from "../../assets/img/portfolio.png";
 import { motion } from "framer-motion";
 
 const Navbar = () => {
@@ -64,6 +64,11 @@ const Navbar = () => {
               </Link>
             </li>
             <li>
+              <Link to="skills" spy={true} smooth={true}>
+                Skills
+              </Link>
+            </li>
+            <li>
               <Link to="experience" spy={true} smooth={true}>
                 Experience
               </Link>
@@ -78,17 +83,17 @@ const Navbar = () => {
                 Testimonial
               </Link>
             </li>
-            <li>
+            {/* <li>
               <Link to="contact" spy={true} smooth={true}>
                 Contact
               </Link>
-            </li>
+            </li> */}
           </ul>
         </div>
-        <Toggle />
-        {/* <Link to="contact" spy={true} smooth={true}>
-        <button className="main-btn">Contact</button>
-        </Link> */}
+        {/* <Toggle /> */}
+        <Link to="contact" spy={true} smooth={true} className="">
+          <button className="main-btn">Hire&nbsp;Me</button>
+        </Link>
       </div>
     </div>
   );

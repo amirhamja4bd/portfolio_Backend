@@ -52,7 +52,7 @@ app.use("/api/v1", router)
 // })
 
 // Set up your server routes here
-app.get('/api/example', (req, res) => {
+app.get('/example', (req, res) => {
     // Handle your API endpoint logic
     res.json({ message: 'Example response from the server' });
   });

@@ -1,15 +1,6 @@
 import React, { useContext } from "react";
 import "./Intro.css";
-import Vector1 from "../../img/Vector1.png";
-import Vector2 from "../../img/Vector2.png";
-import boy from "../../img/mee.png";
-import glassesimoji from "../../img/glassesimoji.png";
-import thumbup from "../../img/thumbup.png";
-import crown from "../../img/crown.png";
-import FloatinDiv from "../FloatingDiv/FloatingDiv";
-import Github from "../../img/github.png";
-import LinkedIn from "../../img/linkedin.png";
-import Instagram from "../../img/instagram.png";
+import boy from "../../assets/img/mee.png";
 import { themeContext } from "../../Context";
 import { motion } from "framer-motion";
 import { Link } from "react-scroll";
@@ -46,7 +37,7 @@ const Intro = () => {
                         meaningful contributions to the organization's growth.
                       </p>
                       <div className="mt-4">
-                          <a className="main-btn" href="https://drive.google.com/file/d/1uj5KcyRNQBMsihvMBrhOj76JXlctTsQn/view?usp=drive_link">Download CV</a>
+                          <a className="main-btn" target="_blank" href="https://drive.google.com/file/d/1uj5KcyRNQBMsihvMBrhOj76JXlctTsQn/view?usp=drive_link">Download CV</a>
                       </div>
                   </div>
                   <div className="i-icons d-flex justify-content-md-start justify-content-center mt-5">

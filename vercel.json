@@ -4,16 +4,24 @@
     {
       "src": "server.js",
       "use": "@vercel/node"
+    },
+    {
+      "src": "client",
+      "use": "@vercel/static-build",
+      "config": {
+        "buildCommand": "npm run build",
+        "outputDirectory": "/client/index.html"
+      }
     }
   ],
   "routes": [
     {
-      "src": "/api/example",
+      "src": "/api/v1/(.*)",
       "dest": "server.js"
     },
     {
       "src": "/(.*)",
-      "dest": "server.js"
+      "dest": "/client/index.html"
     }
   ]
 }
