@@ -1,10 +1,9 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react-swc'
+import { defineConfig } from 'vite';
+import { resolve } from 'path';
 
-// https://vitejs.dev/config/
 export default defineConfig({
-  
-  plugins: [react()],
+  // ... other configuration options
+
   build: {
     // ... other build options
 
@@ -14,5 +13,24 @@ export default defineConfig({
       },
     },
   },
-})
+});
+
+
+// import { defineConfig } from 'vite'
+// import react from '@vitejs/plugin-react-swc'
+
+// // https://vitejs.dev/config/
+// export default defineConfig({
+
+//   plugins: [react()],
+//   build: {
+//     // ... other build options
+
+//     rollupOptions: {
+//       input: {
+//         main: resolve(__dirname, 'src/main.jsx'),
+//       },
+//     },
+//   },
+// })
 
