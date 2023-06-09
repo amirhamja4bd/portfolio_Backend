@@ -15,8 +15,6 @@ const cors = require('cors');
 
 //DataBase 
 const mongoose = require('mongoose');
-// app.use(express.static('client/dist'));
-app.use(express.static(path.join(__dirname, 'client', 'dist')));
 
 // Security Middleware implementation
 app.use(cors())
@@ -34,33 +32,18 @@ const limiter = rateLimit({windowMs: 15*60*60, max:3000})
 // Manage BackEnd Routings
 app.use("/api/v1", router)
 
-// app.get('/', (req, res)=>{
-//     res.status(200).send(`
-//         <div class="container mt-5">
-//             <div class="jumbotron text-center">
-//                 <h1 class="fs-3">Welcome to My E-Commerce Server</h1>
-//                 <p class="lead">Visit My Website:- 
-//                 <a class="" href="https://amirhamza.vercel.app/"> My E-Commerce Website</a></p>
-//             </div>
-//         </div>
-//     `);
-// });
+app.get('/', (req, res)=>{
+    res.status(200).send(`
+        <div class="container mt-5">
+            <div class="jumbotron text-center">
+                <h1 class="fs-3">Welcome to My E-Commerce Server</h1>
+                <p class="lead">Visit My Website:- 
+                <a class="" href="https://amirhamza.vercel.app/"> My E-Commerce Website</a></p>
+            </div>
+        </div>
+    `);
+});
 
-// Manage Frontend Routes
-// app.get('/',function (req,res) {
-//     res.sendFile(path.resolve(__dirname,'client', 'dist', 'index.html'))
-// })
-
-// Set up your server routes here
-app.get('/example', (req, res) => {
-    // Handle your API endpoint logic
-    res.json({ message: 'Example response from the server' });
-  });
-  
-  // Serve index.html for all other routes
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'client', 'index.html'));
-  });
 
 // Database Connection
 const database = process.env.DATABASE_URL
