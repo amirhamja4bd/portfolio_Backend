@@ -1,3 +1,109 @@
+const FormHelper = require("../helper/FormHelper");
+const { Intro } = require("../models/portfolioModel");
+
+// Create intro document
+exports.createIntro = async (req, res) => {
+  try {
+    const { welcomeText, firstName, lastName, designation, description, social } = req.body;
+    const filename = {
+      public_id: req?.file?.cloudinaryId,
+      secure_url: req?.file?.cloudinaryUrl,
+    };
+    const imageName = {
+      public_id: req?.file?.cloudinaryId,
+      secure_url: req?.file?.cloudinaryUrl,
+    };
+    if (FormHelper.isEmpty(firstName || lastName)){
+      return res.status(400).json({
+          error: 'Name is required'
+      })
+  }
+    const newIntro = new Intro({ welcomeText, firstName, lastName, designation, description, file : filename, image: imageName, social, });
+
+    await newIntro.save();
+
+    res.json({ message: 'Intro created successfully', intro: newIntro });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: 'Internal server error' , error});
+  }
+};
+
+// Get all intro documents
+exports.getAllIntro = async (req, res) => {
+  try {
+    const intros = await Intro.find({});
+    res.json({ intros });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+// Get intro document by ID
+exports.getIntroById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const intro = await Intro.findById(id);
+    if (!intro) {
+      return res.status(404).json({ error: 'Intro not found' });
+    }
+    res.json({ intro });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+// Update intro document by ID
+exports.updateIntroById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { welcomeText, firstName, lastName, designation, description, resume, image, social } = req.body;
+
+    const updatedIntro = await Intro.findByIdAndUpdate(
+      id,
+      {
+        welcomeText,
+        firstName,
+        lastName,
+        designation,
+        description,
+        resume,
+        image,
+        social,
+      },
+      { new: true }
+    );
+
+    if (!updatedIntro) {
+      return res.status(404).json({ error: 'Intro not found' });
+    }
+
+    res.json({ message: 'Intro updated successfully', intro: updatedIntro });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+// Delete intro document by ID
+exports.deleteIntroById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deletedIntro = await Intro.findByIdAndDelete(id);
+    if (!deletedIntro) {
+      return res.status(404).json({ error: 'Intro not found' });
+    }
+    res.json({ message: 'Intro deleted successfully' });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+
+
 // const router = require("express").Router();
 // const {
 //   Intro,
