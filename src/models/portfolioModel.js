@@ -22,21 +22,13 @@ const introSchema = new mongoose.Schema({
     required: true,
   },
   file: {
-    public_id: {type: String , required: true },
-    secure_url: {type: String , required: true },
+    public_id: {type: String },
+    secure_url: {type: String },
   },
   image: {
     public_id: { type: String  },
     secure_url: { type: String  },
   },
-  // file: {
-  //   public_id: {type: String , required: true },
-  //   secure_url: {type: String , required: true },
-  // },
-  // image: {
-  //   public_id: { type: String  , required: true },
-  //   secure_url: { type: String  , required: true },
-  // },
   social: {
     facebook: {
       type: String,
@@ -94,7 +86,8 @@ const servicesSchema = new mongoose.Schema({
 );
 
 const skillSchema = new mongoose.Schema({
-  technicalSkills: {
+  technicalSkills: [
+    {
     skillName: { 
       type: String ,
       required: true,
@@ -103,8 +96,10 @@ const skillSchema = new mongoose.Schema({
       type: String ,
       required: true,
     },
-  },
-  professionalSkills: {
+  }
+],
+  professionalSkills: [
+    {
     skillName: { 
       type: String ,
       required: true,
@@ -113,28 +108,31 @@ const skillSchema = new mongoose.Schema({
       type: String ,
       required: true,
     },
-  },
+  }
+],
 },  
 {timestamps: true, versionKey:false}
 );
 
 const experienceSchema = new mongoose.Schema({
-  
-  count: {
-    type: String,
-    required: true,
-  },
-  title1: {
-    type: String,
-    required: true,
-  },
-  title2: {
-    type: String,
-    required: true,
-  },
-},  
-{timestamps: true, versionKey:false}
-);
+  experiences: [
+    {
+      count: {
+        type: String,
+        required: true,
+      },
+      title1: {
+        type: String,
+        required: true,
+      },
+      title2: {
+        type: String,
+        required: true,
+      },
+    }
+  ]
+}, { timestamps: true, versionKey: false });
+
 
 const projectsSchema = new mongoose.Schema({
   thumbnail: {
@@ -190,12 +188,10 @@ const projectsSchema = new mongoose.Schema({
 );
 
 const testimonialSchema = new mongoose.Schema({
-  image: [
-    {
-      public_id: { type: String },
-      secure_url: { type: String },
-    },
-  ],
+  image: {
+    public_id: { type: String },
+    secure_url: { type: String },
+  },
   name: {
     type: String,
     required: true,
@@ -215,11 +211,10 @@ const testimonialSchema = new mongoose.Schema({
   mobile: {
     type: String,
   },
-  age: {
+  status: {
     type: String,
-  },
-  address: {
-    type: String,
+    enum: ['active', 'pending'],
+    default: 'pending',
   },
 },  
 {timestamps: true, versionKey:false}
@@ -262,10 +257,10 @@ const contactSchema = new mongoose.Schema({
 module.exports = {
   Intro: mongoose.model("Intros", introSchema),
   About: mongoose.model("Abouts", aboutSchema),
-  About: mongoose.model("Services", servicesSchema),
+  Services: mongoose.model("Services", servicesSchema),
   Experience: mongoose.model("Experiences", experienceSchema),
   Project: mongoose.model("Projects", projectsSchema),
-  Course: mongoose.model("Skills", skillSchema),
-  Contact: mongoose.model("Testimonials", testimonialSchema),
+  Skill: mongoose.model("Skills", skillSchema),
+  Testimonial: mongoose.model("Testimonials", testimonialSchema),
   Contact: mongoose.model("Contacts", contactSchema),
 };

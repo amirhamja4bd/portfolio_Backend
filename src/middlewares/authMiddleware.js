@@ -6,7 +6,8 @@ exports.isViewPermission = (req, res, next) => {
   try {
     // console.log(req.headers.authorization)
     const decoded = jwt.verify(
-      req.headers.authorization, process.env.JWT_SECRET_KEY
+      req.headers.authorization, 'hs76hrg7*6wt3r5p3$jrh7te'
+      // req.headers.authorization, process.env.JWT_SECRET_KEY
     );
     
     req.user = decoded;

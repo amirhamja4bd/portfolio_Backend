@@ -59,10 +59,15 @@ exports.login = async (req, res) => {
 
     // Generate a JSON Web Token (JWT)
     const token = jwt.sign(
-      { userId: user._id, userName: user.userName },
-      process.env.JWT_SECRET_KEY,
+      { _id: user._id, userName: user.userName , role: user.role },
+      'hs76hrg7*6wt3r5p3$jrh7te',
       { expiresIn: '7d' }
     );
+    // const token = jwt.sign(
+    //   { userId: user._id, userName: user.userName },
+    //   process.env.JWT_SECRET_KEY,
+    //   { expiresIn: '7d' }
+    // );
 
     // Return the user's information and the token
     res.json({
