@@ -27,7 +27,86 @@ const upload = multer({
 });
 
 
-const uploadfieldsCloudinary = (req, res, next) => {
+// const uploadfieldsCloudinary = (req, res, next) => {
+//   try {
+//     const files = Object.entries(req.files);
+
+//     if (files.length === 0) {
+//       return next();
+//     }
+//     // console.log('files', files);
+//     // console.log('req.files', req.files);
+//     // return;
+
+//     const uploadPromises = files.map(([fieldName, fileData]) => {
+//       // console.log('fieldName', fieldName);
+//       // console.log('fieldData', fileData);
+//       // return
+//       return fileData.map((fileData) => {
+//         return new Promise((resolve, reject) => {
+//         cloudinary.uploader.upload(fileData.path, (error, result) => {
+//           if (error) {
+//             reject(error);
+//           } else {
+//             resolve({ fieldName, fileId: result.public_id, fileUrl: result.secure_url });
+//           }
+//         });
+//       })
+//       });
+//     });
+// // return
+//     Promise.all(uploadPromises)
+//       .then((uploadedFiles) => {
+//         uploadedFiles.forEach(({ fieldName, fileId, fileUrl }) => {
+//     // console.log('fieldName,' fieldName);
+//     console.log('uploadedFiles', uploadedFiles);
+//     // console.log('fieldName', fieldName);
+//     // console.log('fileId', fileId);
+//     // console.log('fileUrl', fileUrl);
+//           if (fieldName === 'image') {
+//             req.body.image = {
+//               image_id: fileId,
+//               image_url: fileUrl,
+//             };
+//           } 
+//            else if (fieldName === 'file') {
+//             req.body.file = {
+//               file_id: fileId,
+//               file_url: fileUrl,
+//             };
+//           } else if (fieldName === 'thumbnail') {
+//             req.body.thumbnail = {
+//               thumbnail_id: fileId,
+//               thumbnail_url: fileUrl,
+//             };
+//           }
+//           else if (fieldName === 'images') {
+//             req.body.images = []
+//             req.body.images.push({
+//               images_id: fileId,
+//               images_url: fileUrl,
+//             })
+//           }
+//           // else if (fieldName === 'images') {
+//           //   req.body.images = {
+//           //     images_id: fileId,
+//           //     images_url: fileUrl,
+//           //   };
+//           // }
+//         });
+//         next();
+//       })
+//       .catch((error) => {
+//         console.error(error)
+//         return res.status(500).send({ error: "Error uploading file to Cloudinary" });
+//       });
+//   } catch (err) {
+//     next(err);
+//   }
+// };
+
+
+const uploadfieldsCloudinary = async (req, res, next) => {
   try {
     const files = Object.entries(req.files);
 
@@ -35,40 +114,58 @@ const uploadfieldsCloudinary = (req, res, next) => {
       return next();
     }
 
-    const uploadPromises = files.map(([fieldName, fileData]) => {
-      return new Promise((resolve, reject) => {
-        cloudinary.uploader.upload(fileData[0].path, (error, result) => {
-          if (error) {
-            reject(error);
-          } else {
-            resolve({ fieldName, fileId: result.public_id, fileUrl: result.secure_url });
-          }
+    const uploadPromises = files.flatMap(([fieldName, fileData]) =>
+      fileData.map((file) => {
+        return new Promise((resolve, reject) => {
+          cloudinary.uploader.upload(file.path, (error, result) => {
+            if (error) {
+              reject(error);
+            } else {
+              resolve({ fieldName, fileId: result.public_id, fileUrl: result.secure_url });
+            }
+          });
         });
-      });
+      })
+    );
+
+    const uploadedFiles = await Promise.all(uploadPromises);
+
+    uploadedFiles.forEach(({ fieldName, fileId, fileUrl }) => {
+      switch (fieldName) {
+        case 'image':
+          req.body.image = {
+            image_id: fileId,
+            image_url: fileUrl,
+          };
+          break;
+        case 'file':
+          req.body.file = {
+            file_id: fileId,
+            file_url: fileUrl,
+          };
+          break;
+        case 'thumbnail':
+          req.body.thumbnail = {
+            thumbnail_id: fileId,
+            thumbnail_url: fileUrl,
+          };
+          break;
+        case 'images':
+          if (!req.body.images) {
+            req.body.images = [];
+          }
+          req.body.images.push({
+            images_id: fileId,
+            images_url: fileUrl,
+          });
+          break;
+      }
     });
 
-    Promise.all(uploadPromises)
-      .then((uploadedFiles) => {
-        uploadedFiles.forEach(({ fieldName, fileId, fileUrl }) => {
-          if (fieldName === 'image') {
-            req.body.image = {
-              image_id: fileId,
-              image_url: fileUrl,
-            };
-          } else if (fieldName === 'file') {
-            req.body.file = {
-              file_id: fileId,
-              file_url: fileUrl,
-            };
-          }
-        });
-        next();
-      })
-      .catch((error) => {
-        return res.status(500).send({ error: "Error uploading file to Cloudinary" });
-      });
-  } catch (err) {
-    next(err);
+    next();
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send({ error: "Error uploading file to Cloudinary" });
   }
 };
 

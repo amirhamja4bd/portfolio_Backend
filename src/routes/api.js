@@ -2,7 +2,7 @@ const express = require('express');
 const { login, register } = require('../controllers/userController');
 const { isAdmin, isViewPermission } = require('../middlewares/authMiddleware');
 const { upload, uploadfieldsCloudinary, uploadToCloudinary, deleteFile } = require('../middlewares/cloudinaryUpload');
-const { createIntro, getAllIntro,  portfolioDataGet, createAbout, updateAbout, deleteAbout, deleteService, updateService, createService, createSkill, updateSkill, deleteSkill, createExperience, updateExperience, deleteExperience, createTestimonial, updateTestimonial, deleteTestimonial, createContact, updateContact, deleteContact } = require('../controllers/portfolioController');
+const { createIntro, getAllIntro,  portfolioDataGet, createAbout, updateAbout, deleteAbout, deleteService, updateService, createService, createSkill, updateSkill, deleteSkill, createExperience, updateExperience, deleteExperience, createTestimonial, updateTestimonial, deleteTestimonial, createContact, updateContact, deleteContact, updateIntro, createProject, deleteIntro, updateProject, deleteProject } = require('../controllers/portfolioController');
 
 const router = express.Router();
 
@@ -22,14 +22,14 @@ router.get('/is-admin', isViewPermission, isAdmin, (req, res)=>{
 router.get('/portfolio-data' , portfolioDataGet);
 
 // Intro
-router.get('/intros' , getAllIntro);
-router.post('/intro', isViewPermission, isAdmin , upload.single('image'), uploadToCloudinary, createIntro);
+router.post('/intro', isViewPermission , isAdmin , upload.fields([ { name: 'file', maxCount: 1 }, { name: 'image', maxCount: 1 } ]), uploadfieldsCloudinary, createIntro);
+router.put('/intro/:id', isViewPermission , isAdmin , upload.fields([ { name: 'file', maxCount: 1 }, { name: 'image', maxCount: 1 } ]), uploadfieldsCloudinary, updateIntro);
+router.delete('/intro/:id', isViewPermission, isAdmin , deleteIntro);
 
-// router.post('/intro', isViewPermission , isAdmin , upload.fields([
-//     { name: 'file', maxCount: 1 },
-//     { name: 'image', maxCount: 1 }
-//   ]), uploadfieldsCloudinary, createIntro);
-
+// Project
+router.post('/project', isViewPermission , isAdmin , upload.fields([ { name: 'thumbnail', maxCount: 1 }, { name: 'images', maxCount: 12 } ]), uploadfieldsCloudinary, createProject);
+router.put('/project/:id', isViewPermission , isAdmin , upload.fields([ { name: 'thumbnail', maxCount: 1 }, { name: 'images', maxCount: 12 } ]), uploadfieldsCloudinary, updateProject);
+router.delete('/project/:id', isViewPermission , isAdmin , deleteProject);
 
 // about
 router.post('/about', isViewPermission, isAdmin , upload.single('image'), uploadToCloudinary, createAbout);

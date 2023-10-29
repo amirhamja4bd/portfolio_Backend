@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const introSchema = new mongoose.Schema({
   welcomeText: {
     type: String,
-    required: true,
+    required: [true, " Welcome Text is required"],
   },
   firstName: {
     type: String,
@@ -139,7 +139,7 @@ const projectsSchema = new mongoose.Schema({
     public_id: { type: String },
     secure_url: { type: String },
   },
-  image: [
+  images: [
     {
       public_id: { type: String },
       secure_url: { type: String },

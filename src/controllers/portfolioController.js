@@ -16,7 +16,7 @@ exports.portfolioDataGet = async (req, res) => {
     const services = await Services.find();
 
     res.status(200).send({
-      intro: intros[0],
+      intro: intros,
       about: abouts[0],
       projects: projects[0],
       contact: contacts[0],
@@ -34,102 +34,262 @@ exports.portfolioDataGet = async (req, res) => {
 exports.createIntro = async (req, res) => {
   try {
     const { welcomeText, firstName, lastName, designation, description, social } = req.body;
-    const filename = {
-      public_id: '',
-      secure_url: '',
-    };
-    const imageName = {
-      public_id: req?.file?.cloudinaryId,
-      secure_url: req?.file?.cloudinaryUrl,
-    };
-    if (FormHelper.isEmpty(firstName || lastName)){
+
+    if (!firstName || !lastName) {
       return res.status(400).json({
-          error: 'Name is required'
-      })
-  }
-    const newIntro = new Intro({ welcomeText, firstName, lastName, designation, description, file : filename, image: imageName, social, });
+        error: 'First name and last name are required.',
+      });
+    }
+
+    const { file, image } = req.body;
+
+    const fileData = {
+      public_id: req?.body?.file?.file_id,
+      secure_url: req?.body?.file?.file_url,
+    };
+    const imageData = {
+      public_id: req?.body?.image?.image_id,
+      secure_url: req?.body?.image?.image_url,
+    };
+
+    const introData = {
+      welcomeText,
+      firstName,
+      lastName,
+      designation,
+      description,
+      social,
+      file : fileData,
+      image: imageData,
+    };
+
+    const newIntro = new Intro(introData);
 
     await newIntro.save();
 
     res.json({ message: 'Intro created successfully', intro: newIntro });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ error: 'Internal server error' , error});
+    res.status(500).json({ error: 'Internal server error', error });
   }
 };
 
-// Get all intro documents
-exports.getAllIntro = async (req, res) => {
+// Update
+exports.updateIntro = async (req, res) => {
   try {
-    const intros = await Intro.find({});
-    res.json({ intros });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-};
+    const { welcomeText, firstName, lastName, designation, description, social, imageId, fileId } = req.body;
+    const aboutId = req.params.id;
 
-// Get intro document by ID
-exports.getIntroById = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const intro = await Intro.findById(id);
+    let intro = await Intro.findById(aboutId);
+    console.log('intro', intro)
     if (!intro) {
-      return res.status(404).json({ error: 'Intro not found' });
+      return res.status(404).json({ error: 'About not found' });
     }
-    res.json({ intro });
+
+    intro.welcomeText = welcomeText || intro.welcomeText;
+    intro.firstName = firstName || intro.firstName;
+    intro.lastName = lastName || intro.lastName;
+    intro.designation = designation || intro.designation;
+    intro.description = description || intro.description;
+
+    if (social) {
+            intro.social.facebook = social.facebook || intro.social.facebook;
+            intro.social.linkedin = social.linkedin || intro.social.linkedin;
+            intro.social.github = social.github || intro.social.github;
+          }
+
+    if (imageId) {
+      await deleteFile(intro.image.public_id);
+      intro.image = {
+        public_id: req?.body?.image?.image_id,
+        secure_url: req?.body?.image?.image_url,
+      };
+    }
+    if (fileId) {
+      await deleteFile(intro.file.public_id);
+      intro.file = {
+        public_id: req?.body?.file?.file_id,
+        secure_url: req?.body?.file?.file_url,
+      };
+    }
+
+    await intro.save();
+
+    res.json({ message: 'About updated successfully', intro });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: 'Internal server error', error });
   }
 };
 
-// Update intro document by ID
-exports.updateIntroById = async (req, res) => {
+// Delete Intro
+exports.deleteIntro = async (req, res) => {
   try {
-    const { id } = req.params;
-    const { welcomeText, firstName, lastName, designation, description, resume, image, social } = req.body;
+    const introId = req.params.id;
 
-    const updatedIntro = await Intro.findByIdAndUpdate(
-      id,
-      {
-        welcomeText,
-        firstName,
-        lastName,
-        designation,
-        description,
-        resume,
-        image,
-        social,
-      },
-      { new: true }
-    );
+    const deletedIntro = await Intro.findByIdAndDelete(introId);
 
-    if (!updatedIntro) {
-      return res.status(404).json({ error: 'Intro not found' });
-    }
-
-    res.json({ message: 'Intro updated successfully', intro: updatedIntro });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-};
-
-// Delete intro document by ID
-exports.deleteIntroById = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const deletedIntro = await Intro.findByIdAndDelete(id);
     if (!deletedIntro) {
       return res.status(404).json({ error: 'Intro not found' });
     }
+
+    // Delete associated image file
+    await deleteFile(deletedIntro.image.public_id);
+    await deleteFile(deletedIntro.file.public_id);
+
     res.json({ message: 'Intro deleted successfully' });
   } catch (error) {
     console.log(error);
+    res.status(500).json({ error: 'Internal server error', error });
+  }
+};
+
+// ======================================portfolio===============================================
+exports.createProject = async (req, res) => {
+  try {
+    const { title, technology, type , liveLink, githubClient, description, social , githubServer   } = req.body;
+
+    const thumbnail = {
+      public_id: req?.body?.thumbnail?.thumbnail_id,
+      secure_url: req?.body?.thumbnail?.thumbnail_url,
+    };
+
+    const imageFiles = req?.body?.images
+    const imageArray = imageFiles.map((image) => ({
+      public_id: image?.images_id,
+      secure_url: image?.images_url,
+    }));
+
+    console.log('imageFiles', imageFiles); 
+
+    const projectData = {
+      title,
+      technology,
+      type,
+      liveLink,
+      githubClient,
+      description,
+      social,
+      githubServer,
+      thumbnail,
+      images: imageArray,
+    };
+
+    const newProject = new Project(projectData);
+
+    await newProject.save();
+
+    res.json({ message: 'Project created successfully', intro: newProject });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: 'Internal server error', error });
+  }
+};
+
+// update
+
+exports.updateProject = async (req, res) => {
+  try {
+    const { title, technology, type, liveLink, githubClient, description, social, githubServer, thumbnailId, imagesId } = req.body;
+    const projectId = req.params.id;
+    console.log('thumbnailId', thumbnailId);
+    console.log('imagesId', imagesId);
+
+    let project = await Project.findById(projectId);
+
+    if (!project) {
+      return res.status(404).json({ error: 'Project not found' });
+    }
+
+    project.title = title || project.title;
+    project.technology = technology || project.technology;
+    project.type = type || project.type;
+    project.liveLink = liveLink || project.liveLink;
+    project.githubClient = githubClient || project.githubClient;
+    project.description = description || project.description;
+    project.social = social || project.social;
+    project.githubServer = githubServer || project.githubServer;
+
+    if (thumbnailId) {
+      await deleteFile(project.thumbnail.public_id);
+      project.thumbnail = {
+        public_id: req?.body?.thumbnail?.thumbnail_id,
+        secure_url: req?.body?.thumbnail?.thumbnail_url,
+      };
+    }
+    if (imagesId) {
+      for (const image of project.images) {
+        await deleteFile(image?.public_id);
+      }
+      project.images = req?.body?.images?.map((image) => ({
+        public_id: image?.images_id || null,
+        secure_url: image?.images_url || null,
+      })) || [];
+    }
+    if (req.body.images) {
+      const imageFiles = req?.body?.images;
+      const imageArray = imageFiles.map((image) => ({
+        public_id: image?.images_id,
+        secure_url: image?.images_url,
+      }));
+    
+      project.images = [...project.images, ...imageArray];
+    }
+
+    await project.save();
+
+    res.json({ message: 'Project updated successfully', project });
+  } catch (error) {
+    console.error(error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
+
+// delete
+exports.deleteProject = async (req, res) => {
+  try {
+    const projectId = req.params.id;
+
+    const deletedProject = await Project.findByIdAndDelete(projectId);
+
+    if (!deletedProject) {
+      return res.status(404).json({ error: 'Project not found' });
+    }
+
+    // Delete associated image files
+    for (const image of deletedProject.images) {
+      await deleteFile(image.public_id);
+    }
+    await deleteFile(deletedProject.thumbnail.public_id);
+
+    res.json({ message: 'Project deleted successfully' });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: 'Internal server error', error });
+  }
+};
+
+
+// exports.deleteProject = async (req, res) => {
+//   try {
+//     const projectId = req.params.id;
+
+//     const deletedProject = await Project.findByIdAndDelete(projectId);
+
+//     if (!deletedProject) {
+//       return res.status(404).json({ error: 'Project not found' });
+//     }
+
+//     // Delete associated image file
+//     await deleteFile(deletedProject.images.public_id);
+//     await deleteFile(deletedProject.thumbnail.public_id);
+
+//     res.json({ message: 'Project deleted successfully' });
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).json({ error: 'Internal server error', error });
+//   }
+// };
 
 // ========================About==============================================
 exports.createAbout = async (req, res) => {
@@ -149,33 +309,39 @@ exports.createAbout = async (req, res) => {
     res.status(500).json({ error: 'Internal server error' , error});
   }
 };
+
 // Update about
 exports.updateAbout = async (req, res) => {
   try {
-    const { welcomeText, title, description } = req.body;
+    const { welcomeText, title, description , publicId } = req.body;
     const aboutId = req.params.id;
 
-    const filename = {
-      public_id: req?.file?.cloudinaryId,
-      secure_url: req?.file?.cloudinaryUrl,
-    };
-
-    const updatedAbout = await About.findByIdAndUpdate(
-      aboutId,
-      { welcomeText, title, description , image: filename },
-      { new: true }
-    );
-
-    if (!updatedAbout) {
+    let about = await About.findById(aboutId);
+    if (!about) {
       return res.status(404).json({ error: 'About not found' });
     }
 
-    res.json({ message: 'About updated successfully', about: updatedAbout });
+    about.welcomeText = welcomeText || about.welcomeText;
+    about.title = title || about.title;
+    about.description = description || about.description;
+
+    if (publicId) {
+      await deleteFile(about.image.public_id);
+      about.image = {
+        public_id: req?.file?.cloudinaryId,
+        secure_url: req?.file?.cloudinaryUrl,
+      };
+    }
+
+    await about.save();
+
+    res.json({ message: 'About updated successfully', about });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: 'Internal server error', error });
   }
 };
+
 // Delete About
 exports.deleteAbout = async (req, res) => {
   try {
@@ -218,25 +384,28 @@ exports.createService = async (req, res) => {
 
 exports.updateService = async (req, res) => {
   try {
-    const { serviceName, description } = req.body;
+    const { serviceName, description , imageId } = req.body;
     const serviceId = req.params.id;
 
-    const image = {
-      public_id: req?.file?.cloudinaryId,
-      secure_url: req?.file?.cloudinaryUrl,
-    };
-
-    const updatedService = await Services.findByIdAndUpdate(
-      serviceId,
-      { serviceName, description , image },
-      { new: true }
-    );
-
-    if (!updatedService) {
-      return res.status(404).json({ error: 'Service not found' });
+    let service = await Services.findById(serviceId);
+    if (!service) {
+      return res.status(404).json({ error: 'About not found' });
     }
 
-    res.json({ message: 'Service updated successfully', service: updatedService });
+    service.serviceName = serviceName || service.serviceName;
+    service.description = description || service.description;
+
+    if (imageId) {
+      await deleteFile(service.image.public_id);
+      service.image = {
+        public_id: req?.file?.cloudinaryId,
+        secure_url: req?.file?.cloudinaryUrl,
+      };
+    }
+
+    await service.save();
+
+    res.json({ message: 'Service updated successfully', service });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: 'Internal server error', error });
@@ -396,25 +565,31 @@ exports.createTestimonial = async (req, res) => {
 
 exports.updateTestimonial = async (req, res) => {
   try {
-    const { name, designation, description, email, mobile } = req.body;
-    const serviceId = req.params.id;
+    const { name, designation, description, email, mobile , imageId } = req.body;
+    const testimonialId = req.params.id;
 
-    const image = {
-      public_id: req?.file?.cloudinaryId,
-      secure_url: req?.file?.cloudinaryUrl,
-    };
+    let testimonial = await Testimonial.findById(testimonialId);
+      if (!testimonial) {
+        return res.status(404).json({ error: 'About not found' });
+      }
 
-    const updatedService = await Testimonial.findByIdAndUpdate(
-      serviceId,
-      { name, designation, description, email, mobile , image },
-      { new: true }
-    );
+      testimonial.name = name || testimonial.name;
+      testimonial.designation = designation || testimonial.designation;
+      testimonial.description = description || testimonial.description;
+      testimonial.email = email || testimonial.email;
+      testimonial.mobile = mobile || testimonial.mobile;
 
-    if (!updatedService) {
-      return res.status(404).json({ error: 'Service not found' });
-    }
+      if (imageId) {
+        await deleteFile(testimonial.image.public_id);
+        testimonial.image = {
+          public_id: req?.file?.cloudinaryId,
+          secure_url: req?.file?.cloudinaryUrl,
+        };
+      }
 
-    res.json({ message: 'Service updated successfully', service: updatedService });
+      await testimonial.save();
+
+    res.json({ message: 'Testimonial updated successfully', testimonial });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: 'Internal server error', error });
